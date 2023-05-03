@@ -16,12 +16,15 @@ import inspect
 from skimage.transform import resize
 
 
-
+'''Import intake catalog EUREC4A'''
 from intake import open_catalog
 cat = open_catalog("https://raw.githubusercontent.com/eurec4a/eurec4a-intake/master/catalog.yml")
-
 cat = eurec4a.get_intake_catalog()
-data = cat.RonBrown.MAERI['SSTskin'].to_dask()
 
+'''Set data to be SST'''
+data = cat.RonBrown.MAERI['SSTskin'].to_dask()
 SST = data.sea_surface_temperature.values
+
+'''Calculate SST mean for the EUREC4A period'''
 mean_SST = np.mean(SST)
+
