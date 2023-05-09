@@ -16,11 +16,13 @@ import inspect
 import cloudmetrics
 import plotly.graph_objects as go
 import seaborn as sn
-import pyhdf
+#import pyhdf
 #import GOES
-from calculating_latlon import calculate_degrees
-from cut_subgrid_module import cut_sub_grid
+#from calculating_latlon import calculate_degrees
+#from cut_subgrid_module import cut_sub_grid
 import os
+from skimage.transform import resize
+import time
 
 
 directory = r'C:\Users\LENOVO\Desktop\TU_Delft\thesis\data\cut_sat'
@@ -56,110 +58,13 @@ time_sat = []
 
 for entry in entries:
     python_indices  = [index for (index, item) in enumerate(entries) if item == entry]
-    print(python_indices)
+    print(python_indices) #in order to know where we are in the list
     file_location_name = os.path.join(directory,entry)
 
     cmap = "Blues_r"
     '''Import data (brightness temperatures are L2 products'''
     
     ds = xr.open_mfdataset(file_location_name)
-# =============================================================================
-#     #plt.figure(figsize = (10,10))
-#     #plt.contourf(data.x, data.y, data.CMI, cmap = cmap)
-# 
-#     '''Regridding the area to lat and lon in degrees instead of fix radians'''
-#     #this is a function that is made in the calculate_degrees module
-#     lat, lon = calculate_degrees(data)
-#     
-#     '''Assign the dataset the lat and lon values'''
-#     
-#     ds = xr.Dataset({'C13_Brightness_Temp': (('y', 'x'), data.CMI.values)},
-#                       {'lat': (['y','x'],lat), 'lon': (['y','x'],lon), 'time': ( data.t.values)}, 
-#                       {'units': ('Kelvin'), 
-#                        'long_name': ('Brightness Temperatures for cloud and moisture')})
-#     
-#     #plt.figure(figsize = (10,10))
-#     ds = ds.isel(x = slice(3000,4000), y = slice(1000,4000)) #after converting to lat and lon there are nan values of lat and lon andthis makes it impossible to plot. so this is why we cut
-#     #ds.C13_Brightness_Temp.plot(x = 'lon', y = 'lat', cmap = cmap)
-#     #plt.contourf(ds.lon.values, ds.lat.values, ds.C13_Brightness_Temp.values, cmap = cmap)
-#     
-#     latbegin = 10
-#     latend = 20
-#     lonbegin = -48
-#     lonend = -61
-#     
-#     lat_begin_arr = []
-#     lat_end_arr = []
-#     for val in ds.lat.values[:,0]: #for latitude you need to change the rows because if you stay on one row but change cols the latitude stays the same. 
-#         distance_lat_begin = np.abs(val - latbegin)
-#         lat_begin_arr.append(distance_lat_begin)
-#         distance_lat_end = np.abs(val - latend)
-#         lat_end_arr.append(distance_lat_end)
-#      
-#     index_closest_begin_lat = np.argwhere(lat_begin_arr == np.min(lat_begin_arr))       
-#     index_closest_end_lat = np.argwhere(lat_end_arr == np.min(lat_end_arr))           
-#             
-#     ds = ds.isel(y = slice(index_closest_end_lat[0,0], (index_closest_begin_lat[0,0]) ))
-#     
-#     lon_begin_arr = []
-#     lon_end_arr = []
-#     for val in ds.lon.values[0,:]: #for lonigtude you need to change columns, if you stay on the same column the longitude remains the same.
-#         distance_lon_begin = np.abs(val - lonbegin)
-#         lon_begin_arr.append(distance_lon_begin)
-#         distance_lon_end = np.abs(val - lonend)
-#         lon_end_arr.append(distance_lon_end)
-#      
-#     index_closest_begin_lon = np.argwhere(lon_begin_arr == np.min(lon_begin_arr))       
-#     index_closest_end_lon = np.argwhere(lon_end_arr == np.min(lon_end_arr))   
-#     
-#     ds = ds.isel(x = slice(index_closest_end_lon[0,0], (index_closest_begin_lon[0,0]) ))
-#     
-#     #ds = cut_sub_grid(ds)
-#     plt.figure(figsize = (10,10))
-#     ds.C13_Brightness_Temp.plot(x = 'lon', y = 'lat', cmap = cmap)
-#     
-#     y = 13.1939
-#     x = -59.5432
-#     plt.plot(x, y, marker="o", markersize=20, markeredgecolor="red", markerfacecolor="red")
-#     plt.text((x + 0.2), (y + 0.2), 'BCO')
-#     
-#     
-#     ds = ds.expand_dims(dim = 'time')
-#     
-#     time = np.array(ds.time.values)
-#     
-#     x = len(ds.x)
-#     y = len(ds.y)
-#             
-#     if x == y: 
-#         print('Field is a square')
-#     else: 
-#         imin = np.argmin(ds.lat.shape)
-#         imin = ds.lat.shape[0]
-#         div = imin 
-#         if (div % 2) == 0 :
-#             ds = ds.isel(x = slice(0, (imin)), y = slice(0, (imin)))
-#         else:
-#             ds = ds.isel(x = slice(0, (imin-1)), y = slice(0, (imin-1)))
-#     
-#     save_directory = 'C:\\Users\\LENOVO\\Desktop\\TU_Delft\\thesis\\data\\cut_sat\\'
-#     filename = entry
-#     filename = entry + '.nc'
-#     save_path = os.path.join(save_directory,filename)        
-#     ds.to_netcdf(save_path)
-#     
-#     #plt.figure(figsize = (10,10))
-#     #ds.C13_Brightness_Temp.plot(x = 'lon', y = 'lat', cmap = cmap)
-#     
-#     #y = 13.1939
-#     #x = -59.5432
-#     #plt.plot(x, y, marker="o", markersize=20, markeredgecolor="red", markerfacecolor="red")
-#     #plt.text((x + 0.2), (y + 0.2), 'BCO')
-# 
-# 
-# =============================================================================
-
-
     
     '''Compute metrics'''
     metrics = [
@@ -204,14 +109,30 @@ for entry in entries:
             while True:
                 # Cut for time and subgrid
                 cmap = "RdBu_r"
-                scene = ds.C13_Brightness_Temp.isel(time = i)
+                scene = ds.C13_Brightness_Temp.isel(time = i) #scene only has the brightness temperatures
                 time_sat.append(scene.time.values)
-                #scene = ds.isel(time = i)
+                try:
+                    # Resize
+                    imin = np.argmin(scene.shape)
+                    scene = resize(scene, (scene.shape[imin],scene.shape[imin]), anti_aliasing=True) #we are resizing but its already a square so nothing is supposed to change. 
+                    assert(np.isnan(scene).any() == False)
+                except:
+                    save_directory = 'C:\\Users\\LENOVO\\Desktop\\TU_Delft\\thesis\\metric_results\\'
+                    filename = 'metrics_obs_2000.h5'
+                    save_path = os.path.join(save_directory,filename)
+                    data_pd.to_hdf(save_path, 'cloudmetrics', mode='w')
+                    print(df_metrics)
+                    data_pd['Time'] = time_sat
+                    #print('Unable to access scene, retrying...')
+                    #time.sleep(5)
+                    continue
+                
                 plt.figure()
                 plt.imshow(scene, cmap=cmap)
                 break
-            T_cl_min = 286
-            T_cl_max = 293
+            
+            T_cl_min = 277
+            T_cl_max = 290
             
             q_cutoff = 25
             T_cutoff = 285
@@ -220,12 +141,11 @@ for entry in entries:
             
             cloud_mask = np.zeros(scene.shape,dtype=int)
             cloud_mask[(scene < T_cl_max) & (scene > T_cl_min)] = 1
+            plt.figure()
             plt.imshow(cloud_mask, cmap=cmap)
             
             if np.percentile(scene, q_cutoff) < T_cutoff:
                 print('Reject due to high clouds')
-            #else:
-                #print('Less than 25% high clouds')
                 continue
     
             computed_object_labels = False
@@ -242,7 +162,7 @@ for entry in entries:
     
                     # Compute metric
                     fn_metric = available_object_metrics[metrics[j]]                
-                    df_metrics.iloc[i, df_metrics.columns.get_loc(metrics[j])] = fn_metric(object_labels) # its supposed to save it in the dataframe but it doesnt
+                    df_metrics.iloc[i, df_metrics.columns.get_loc(metrics[j])] = fn_metric(object_labels) 
     
     
                 elif metrics[j] in available_mask_metrics.keys():
@@ -266,7 +186,7 @@ for entry in entries:
     
                         # Compute spectra if not done yet
                         if not computed_spectra:
-                            wavenumbers, psd_1d_radial, psd_1d_azimuthal = cloudmetrics.scalar.compute_spectra(scene.values)
+                            wavenumbers, psd_1d_radial, psd_1d_azimuthal = cloudmetrics.scalar.compute_spectra(scene)
                             computed_spectra = True
     
                         # Compute metrics
@@ -277,21 +197,23 @@ for entry in entries:
     
                     # All other scalar metrics computed normally
                     else:
-                        df_metrics.iloc[i, df_metrics.columns.get_loc(metrics[j])] = fn_metric(scene.values) #issue is here
+                        df_metrics.iloc[i, df_metrics.columns.get_loc(metrics[j])] = fn_metric(scene) #issue is here
                 # Store after each scene
                 save_directory = 'C:\\Users\\LENOVO\\Desktop\\TU_Delft\\thesis\\metric_results\\Observations\\' #metric_results\\'
                 number = str(python_indices) 
                 data_pd.iloc[python_indices] = df_metrics
-            print(df_metrics)
+                
+                
 
 
-df_metrics
+    save_directory = 'C:\\Users\\LENOVO\\Desktop\\TU_Delft\\thesis\\metric_results\\'
+    filename = 'metrics_obs_2000.h5'
+    save_path = os.path.join(save_directory,filename)
+    data_pd.to_hdf(save_path, 'cloudmetrics', mode='w')
+    print(df_metrics)
+
+
 data_pd['Time'] = time_sat
-
-save_directory = 'C:\\Users\\LENOVO\\Desktop\\TU_Delft\\thesis\\metric_results\\'
-filename = 'metrics_obs_293_286_test.h5'
-save_path = os.path.join(save_directory,filename)
-data_pd.to_hdf(save_path, 'cloudmetrics', mode='w')
 
 
 
