@@ -17,10 +17,10 @@ import inspect
 import cloudmetrics
 import plotly.graph_objects as go
 import seaborn as sn
-import pyhdf
+#import pyhdf
 #import GOES
 from calculating_latlon import calculate_degrees
-from cut_subgrid_module import cut_sub_grid
+#from cut_subgrid_module import cut_sub_grid
 import os
 
 
