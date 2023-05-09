@@ -16,9 +16,9 @@ import inspect
 import cloudmetrics
 import plotly.graph_objects as go
 import seaborn as sn
-import pyhdf
+#import pyhdf
 #from pyhdf.SD import SD, SDC
-import GOES
+#import GOES
 
 def calculate_degrees(data):
     proj_info = data.variables['goes_imager_projection'].attrs
