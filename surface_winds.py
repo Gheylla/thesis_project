@@ -57,19 +57,28 @@ diur_noHGTQS_noUVmix = mean_tot_speed_noHGTQS_noUVmix.groupby(mean_tot_speed_noH
 
 # %%
 '''Plot all the figures of total wind speed'''
-plt.figure(figsize = (15,10))
-plt.plot(diur_noHGTQS.hour.values, diur_noHGTQS.values, label = 'HARMONIE noHGTQS')
-plt.plot(diur_noHGTQS_noSHAL.hour.values, diur_noHGTQS_noSHAL.values, label = 'HARMONIE noHGTQS noSHAL')
-plt.plot(diur_noHGTQS_noUVmix.hour.values, diur_noHGTQS_noUVmix.values, label = 'HARMONIE noHGTQS noUVmix')
-plt.title('Composite diurnal cycle of total wind speed')
-plt.xlabel('Time [hr]')
+hours = np.linspace(00,23, 24)
+lt = [20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+
+fig, ax = plt.subplots(layout='constrained', figsize = (15,10))
+
+
+ax.plot(diur_noHGTQS.hour.values, diur_noHGTQS.values, label = 'HARMONIE noHGTQS', color = 'red')
+ax.plot(diur_noHGTQS_noSHAL.hour.values, diur_noHGTQS_noSHAL.values, label = 'HARMONIE noHGTQS noSHAL', color = 'blue')
+ax.plot(diur_noHGTQS_noUVmix.hour.values, diur_noHGTQS_noUVmix.values, label = 'HARMONIE noHGTQS noUVmix', color = 'green')
+
+ax.grid()
+ax.set_xticks(hours)
+ax.set_xlabel('UTC Time [hr]')
+secax = ax.secondary_xaxis('top')
+secax.set_xticks(hours, lt)
+secax.set_xlabel('Local Time [hr]')
+
+
 plt.ylabel('Wind speed [m/s]')
-plt.grid()
+plt.title('Composite diurnal cycle of total wind speed at the surface')
 plt.legend()
-
-hours = np.linspace(0, 23, 24)
-plt.xticks(diur_noHGTQS_noUVmix.hour.values, hours)
-
+plt.show()
 
 # %%
 '''Determine the mean of the u and v winds separately'''
@@ -95,22 +104,42 @@ mean_vas_noHGTQS_noUVmix = mean_vas_noHGTQS_noUVmix.groupby(vas_noHGTQS.time.dt.
 # %% 
 
 '''Plot all of the figures'''
-plt.figure()
-plt.plot(mean_uas_noHGTQS.hour.values, mean_uas_noHGTQS.uas.values, label = 'HARMONIE noHGTQS')
-plt.plot(mean_uas_noHGTQS_noSHAL.hour.values, mean_uas_noHGTQS_noSHAL.uas.values, label = 'HARMONIE noHGTQS noSHAL')
-plt.plot(mean_uas_noHGTQS_noUVmix.hour.values, mean_uas_noHGTQS_noUVmix.uas.values, label = 'HARMONIE noHGTQS noUVmix')
+hours = np.linspace(00,23, 24)
+lt = [20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+
+fig, ax = plt.subplots(layout='constrained', figsize = (15,10))
+ax.plot(mean_uas_noHGTQS.hour.values, mean_uas_noHGTQS.uas.values, label = 'HARMONIE noHGTQS', color = 'red')
+ax.plot(mean_uas_noHGTQS_noSHAL.hour.values, mean_uas_noHGTQS_noSHAL.uas.values, label = 'HARMONIE noHGTQS noSHAL', color = 'blue')
+ax.plot(mean_uas_noHGTQS_noUVmix.hour.values, mean_uas_noHGTQS_noUVmix.uas.values, label = 'HARMONIE noHGTQS noUVmix', color = 'green')
+
+ax.set_xticks(hours)
+ax.set_xlabel('UTC Time [hr]')
+secax = ax.secondary_xaxis('top')
+secax.set_xticks(hours, lt)
+secax.set_xlabel('Local Time [hr]')
+
 plt.ylabel('Windspeed [m/s]')
 plt.title('East-ward near surface wind speed')
-plt.xlabel('Time [hr]')
-plt.grid()
+ax.grid()
 plt.legend()
+plt.show()
 
-plt.figure()
-plt.plot(mean_vas_noHGTQS.hour.values, mean_vas_noHGTQS.vas.values, label = 'HARMONIE noHGTQS')
-plt.plot(mean_vas_noHGTQS_noSHAL.hour.values, mean_vas_noHGTQS_noSHAL.vas.values, label = 'HARMONIE noHGTQS noSHAL')
-plt.plot(mean_vas_noHGTQS_noUVmix.hour.values, mean_vas_noHGTQS_noUVmix.vas.values, label = 'HARMONIE noHGTQS UVmix')
+
+#%%
+fig1, ax2 = plt.subplots(layout='constrained', figsize = (15,10))
+ax2.plot(mean_vas_noHGTQS.hour.values, mean_vas_noHGTQS.vas.values, label = 'HARMONIE noHGTQS', color = 'red')
+ax2.plot(mean_vas_noHGTQS_noSHAL.hour.values, mean_vas_noHGTQS_noSHAL.vas.values, label = 'HARMONIE noHGTQS noSHAL', color = 'blue')
+ax2.plot(mean_vas_noHGTQS_noUVmix.hour.values, mean_vas_noHGTQS_noUVmix.vas.values, label = 'HARMONIE noHGTQS UVmix', color = 'green')
+
+
+ax2.set_xticks(hours)
+ax2.set_xlabel('UTC Time [hr]')
+secax2 = ax2.secondary_xaxis('top')
+secax2.set_xticks(hours, lt)
+secax2.set_xlabel('Local Time [hr]')
+
 plt.ylabel('Windspeed [m/s]')
 plt.title('North-ward near surface wind speed')
 plt.xlabel('Time [hr]')
-plt.grid()
+ax2.grid()
 plt.legend()
