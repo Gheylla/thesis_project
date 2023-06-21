@@ -19,6 +19,7 @@ import plotly.graph_objects as go
 import os 
 import datetime as dt
 from cut_subgrid_module import cut_sub_grid
+#%%
 
 '''Import data'''
 
@@ -26,10 +27,13 @@ data_pr_noHGTQS = xr.open_mfdataset(r'C:\Users\LENOVO\Desktop\TU_Delft\thesis\da
 data_pr_noHGTQS_noSHAL = xr.open_mfdataset(r'C:\Users\LENOVO\Desktop\TU_Delft\thesis\data\pr_data\pr_noHGTQS_noSHAL_cut.nc')
 data_pr_noHGTQS_noUVmix = xr.open_mfdataset(r'C:\Users\LENOVO\Desktop\TU_Delft\thesis\data\pr_data\pr_noHGTQS_noUVmix_cut.nc')
 
+#%%
 '''Make mean of the area'''
 mean_pr_noHGTQS = data_pr_noHGTQS.pr.mean(dim = ('x', 'y'))
 mean_pr_noHGTQS_noSHAL = data_pr_noHGTQS_noSHAL.pr.mean(dim = ('x', 'y'))
 mean_pr_noHGTQS_noUVmix = data_pr_noHGTQS_noUVmix.pr.mean(dim = ('x', 'y'))
+
+#%%
 
 #plt.plot(mean_pr_noHGTQS.values)
 
@@ -46,6 +50,9 @@ mean_pr_noHGTQS_noUVmix = data_pr_noHGTQS_noUVmix.pr.mean(dim = ('x', 'y'))
 mean_pr_noHGTQS = mean_pr_noHGTQS.values
 mean_pr_noHGTQS_noSHAL = mean_pr_noHGTQS_noSHAL.values
 mean_pr_noHGTQS_noUVmix = mean_pr_noHGTQS_noUVmix.values
+
+#%%
+'''determine the hourly rain fall'''
 
 hr_pr_noHGTQS = np.zeros(len(data_pr_noHGTQS.time.values))
 hr_pr_noHGTQS_noSHAL = np.zeros(len(data_pr_noHGTQS_noSHAL.time.values))
@@ -65,7 +72,7 @@ for i in range((len(data_pr_noHGTQS.time.values)) - 1):
         pr_noHGTQS = mean_pr_noHGTQS[i]
         pr_noHGTQS_noSHAL = mean_pr_noHGTQS_noSHAL[i]
         pr_noHGTQS_noUVmix = mean_pr_noHGTQS_noUVmix[i]
-        if i == 744:  
+        if i == 744:  #location where the new data starts
             #print(data_pr_noHGTQS.time.values[744])
             hr_pr_noHGTQS[i] = 0
             hr_pr_noHGTQS_noSHAL[i] = 0
@@ -74,29 +81,10 @@ for i in range((len(data_pr_noHGTQS.time.values)) - 1):
             hr_pr_noHGTQS[i] = pr_noHGTQS - pr_noHGTQS_before
             hr_pr_noHGTQS_noSHAL[i] = pr_noHGTQS_noSHAL - pr_noHGTQS_noSHAL_before
             hr_pr_noHGTQS_noUVmix[i] = pr_noHGTQS_noUVmix - pr_noHGTQS_noUVmix_before
-# =============================================================================
-# for i in range((len(data_pr_noHGTQS.time.values)) - 1):
-#     print(i)
-#     if i == 0: 
-#         hr_pr_noHGTQS[i] = mean_pr_noHGTQS[i]
-#         hr_pr_noHGTQS_noSHAL[i] = mean_pr_noHGTQS_noSHAL[i]
-#         hr_pr_noHGTQS_noUVmix[i] = mean_pr_noHGTQS_noUVmix[i]
-#     else:
-#         pr_noHGTQS_before = mean_pr_noHGTQS[i - 1]
-#         pr_noHGTQS_noSHAL_before = mean_pr_noHGTQS_noSHAL[i - 1]
-#         pr_noHGTQS_noUVmix_before = mean_pr_noHGTQS_noUVmix[i - 1]
-#         pr_noHGTQS = mean_pr_noHGTQS[i]
-#         pr_noHGTQS_noSHAL = mean_pr_noHGTQS_noSHAL[i]
-#         pr_noHGTQS_noUVmix = mean_pr_noHGTQS_noUVmix[i]
-#         hr_pr_noHGTQS[i] =  pr_noHGTQS -  pr_noHGTQS_before
-#         if hr_pr_noHGTQS[i] < 0 : 
-#             hr_pr_noHGTQS[i] = 0
-#         else: 
-#             hr_pr_noHGTQS_noSHAL[i] = pr_noHGTQS_noSHAL - pr_noHGTQS_noSHAL_before
-#             hr_pr_noHGTQS_noUVmix[i] = pr_noHGTQS_noUVmix - pr_noHGTQS_noUVmix_before
-# =============================================================================
-        
 
+
+#%% 
+'''Make new dataset'''
 
 xr_precip_noHGTQS = xr.Dataset({'precip': (('time'), hr_pr_noHGTQS )},
                   {'time': ( data_pr_noHGTQS.time.values)}, 
@@ -116,11 +104,21 @@ xr_precip_noHGTQS_noUVmix = xr.Dataset({'precip': (('time'), hr_pr_noHGTQS_noUVm
                    'long_name': ('Precipitation mm/hr noHGTQS noUVmix')})
 
 
+#%%
+xr_precip_noHGTQS.to_netcdf(r'C:\Users\LENOVO\Desktop\TU_Delft\thesis\data\pr_data\pr_nohgtqs_hour.nc')
+xr_precip_noHGTQS_noSHAL.to_netcdf(r'C:\Users\LENOVO\Desktop\TU_Delft\thesis\data\pr_data\pr_nohgtqsnoshal_hour.nc')
+xr_precip_noHGTQS_noUVmix.to_netcdf(r'C:\Users\LENOVO\Desktop\TU_Delft\thesis\data\pr_data\pr_nohgtqsnouvmix_hour.nc')
+
+# %%
 '''Composite diurnal precipitation'''
 precip_noHGTQS = xr_precip_noHGTQS.groupby(xr_precip_noHGTQS.time.dt.hour).mean()
 precip_noHGTQS_noSHAL = xr_precip_noHGTQS_noSHAL.groupby(xr_precip_noHGTQS_noSHAL.time.dt.hour).mean()
 precip_noHGTQS_noUVmix = xr_precip_noHGTQS_noUVmix.groupby(xr_precip_noHGTQS_noUVmix.time.dt.hour).mean()
 
+
+
+#%%
+'''Plot the data'''
 hours = np.linspace(0,23,24)
 
 
