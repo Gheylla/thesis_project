@@ -28,8 +28,46 @@ hus_mean_noHGTQS = data_hus_noHGTQS.mean(dim = ('x', 'y'))
 hus_mean_noHGTQS_noSHAL = data_hus_noHGTQS_noSHAL.mean(dim = ('x', 'y'))
 hus_mean_noHGTQS_noUVmix = data_hus_noHGTQS_noUVmix.mean(dim = ('x', 'y'))
 
+
+#%%
+'''Take mean to get only the levels'''
+#they are not flipped yet
+hus_mean_noHGTQS_lev = hus_mean_noHGTQS.mean(dim = ('time'))
+hus_mean_noHGTQS_noSHAL_lev = hus_mean_noHGTQS_noSHAL.mean(dim = ('time'))
+hus_mean_noHGTQS_noUVmix_lev = hus_mean_noHGTQS_noUVmix.mean(dim = ('time'))
+
+
+#%%
+'''Flip the levels'''
+hus_mean_noHGTQS_lev = np.flip(hus_mean_noHGTQS_lev.hus.values, axis = 0)
+hus_mean_noHGTQS_noSHAL_lev = np.flip(hus_mean_noHGTQS_noSHAL_lev.hus.values, axis = 0)
+hus_mean_noHGTQS_noUVmix_lev = np.flip(hus_mean_noHGTQS_noUVmix_lev.hus.values, axis = 0)
+
+#%%
+'''save the data'''
+hus_mean_noHGTQS_lev_pd = pd.DataFrame(hus_mean_noHGTQS_lev)
+hus_mean_noHGTQS_noSHAL_lev_pd = pd.DataFrame(hus_mean_noHGTQS_noSHAL_lev)
+hus_mean_noHGTQS_noUVmix_lev_pd = pd.DataFrame(hus_mean_noHGTQS_noUVmix_lev)
+
+hus_mean_noHGTQS_lev_pd.to_csv("hus_mean_noHGTQS_lev_flipped.csv")
+hus_mean_noHGTQS_noSHAL_lev_pd.to_csv("hus_mean_noHGTQS_noSHAL_lev_flipped.csv")
+hus_mean_noHGTQS_noUVmix_lev_pd.to_csv("hus_mean_noHGTQS_noUVmix_lev_flipped.csv")
+
+#%% 
+'''Plot the mean of the whole period'''
+plt.figure(figsize = (10,10))
+plt.plot((hus_mean_noHGTQS_lev) * 1000, heights['Full heights'], label = 'HARMONIE noHGTQS', color = 'red' )
+plt.plot((hus_mean_noHGTQS_noSHAL_lev) * 1000, heights['Full heights'], label = 'HARMONIE noHGTQS noSHAL', color = 'blue' )
+plt.plot((hus_mean_noHGTQS_noUVmix_lev) * 1000, heights['Full heights'], label = 'HARMONIE noHGTQS noUVmix', color = 'green' )
+plt.grid()
+plt.legend()
+plt.ylim([0,3000])
+plt.ylabel('Height [m]')
+plt.xlabel('$q_v$ [g/kg]')
+plt.title('Mean vertical profile of specific humidity')
+
 # %%
-'''Make a diurnal overview of the cloud fraction'''
+'''Make a diurnal overview of the specific humidity'''
 hus_diur_noHGTQS = hus_mean_noHGTQS.groupby(hus_mean_noHGTQS.time.dt.hour).mean()
 hus_diur_noHGTQS_noSHAL = hus_mean_noHGTQS_noSHAL.groupby(hus_mean_noHGTQS_noSHAL.time.dt.hour).mean()
 hus_diur_noHGTQS_noUVmix = hus_mean_noHGTQS_noUVmix.groupby(hus_mean_noHGTQS_noUVmix.time.dt.hour).mean()
@@ -54,27 +92,27 @@ hus_diur_noHGTQS_noUVmix_arr = np.flip(hus_diur_noHGTQS_noUVmix_arr, axis = 0)
 hours = np.linspace(0,23,24)
 #we still need to change the limit of the colorbar to set all of them at the same colorbar limit
 
-plt.figure(figsize = (15,10))
+plt.figure(figsize = (13,10))
 plt.contourf(hus_diur_noHGTQS.hour.values, heights['Full heights'], hus_diur_noHGTQS_arr * 1000, cmap = 'BuGn')
 plt.title('Composite diurnal cycle of specific humidity for HARMONIE noHGTQS')
-plt.xlabel('Time [hr]')
+plt.xlabel('UTC Time [hr]')
 plt.ylabel('Height [m]')
 plt.grid()
 plt.xticks(hours)
 plt.ylim([0, 3000])
 #plt.clim(vmin = 0, vmax = 100)
-plt.colorbar(label= '$q_v$ [g/kg]')
+#plt.colorbar(label= '$q_v$ [g/kg]')
 
 
-plt.figure(figsize = (15,10))
+plt.figure(figsize = (12,10))
 plt.contourf(hus_diur_noHGTQS_noSHAL.hour.values, heights['Full heights'], hus_diur_noHGTQS_noSHAL_arr * 1000, cmap = 'BuGn')
 plt.title('Composite diurnal cycle of specific humidity for HARMONIE noHGTQS noSHAL')
-plt.xlabel('Time [hr]')
-plt.ylabel('Height [m]')
+plt.xlabel('UTC Time [hr]')
+#plt.ylabel('Height [m]')
 plt.grid()
 plt.xticks(hours)
 plt.ylim([0, 3000])
-plt.colorbar(label= '$q_v$ [g/kg]')
+#plt.colorbar(label= '$q_v$ [g/kg]')
 #plt.clim(vmin = 0, vmax = 1)
 
 
@@ -82,8 +120,8 @@ plt.colorbar(label= '$q_v$ [g/kg]')
 plt.figure(figsize = (15,10))
 plt.contourf(hus_diur_noHGTQS_noUVmix.hour.values, heights['Full heights'], hus_diur_noHGTQS_noUVmix_arr * 1000, cmap = 'BuGn')
 plt.title('Composite diurnal cycle of specific humidity for HARMONIE noHGTQS noUVmix')
-plt.xlabel('Time [hr]')
-plt.ylabel('Height [m]')
+plt.xlabel('UTC Time [hr]')
+#plt.ylabel('Height [m]')
 plt.grid()
 plt.xticks(hours)
 plt.ylim([0, 3000])
@@ -107,9 +145,9 @@ no_hgtqs_nouvmix_567_mean = np.flip(no_hgtqs_nouvmix_567_mean.hus.values)
 
 # %%
 '''Get the mean vertical profile of the hours that deviate the most'''
-#hours 5, 6 and 7 
+#hours 17, 18 and 19
 no_hgtqs_1719 = hus_diur_noHGTQS.sel(hour = slice(17,19))
-no_hgtqs_1719_mean = no_hgtqs_567.mean(dim = 'hour')
+no_hgtqs_1719_mean = no_hgtqs_1719.mean(dim = 'hour')
 no_hgtqs_1719_mean = np.flip(no_hgtqs_1719_mean.hus.values)
 
 no_hgtqs_noshal_1719 = hus_diur_noHGTQS_noSHAL.sel(hour = slice(17,19))
@@ -121,7 +159,42 @@ no_hgtqs_nouvmix_1719_mean = no_hgtqs_nouvmix_1719.mean(dim = 'hour')
 no_hgtqs_nouvmix_1719_mean = np.flip(no_hgtqs_nouvmix_1719_mean.hus.values)
 
 
+#%%
+'''Take the difference between hours 5-7 and 17-19'''
 
+diff_nohgtqs = no_hgtqs_567_mean - no_hgtqs_1719_mean
+diff_nohgtqs_noshal = no_hgtqs_noshal_567_mean - no_hgtqs_noshal_1719_mean
+diff_nohgtqs_nouvmix = no_hgtqs_nouvmix_567_mean - no_hgtqs_nouvmix_1719_mean
+
+diff_nohgtqs_nouvmix_567 = no_hgtqs_567_mean - no_hgtqs_nouvmix_567_mean
+diff_nohgtqs_nouvmix_171819 = no_hgtqs_1719_mean - no_hgtqs_nouvmix_1719_mean
+
+
+#%%
+'''Plot the differences'''
+plt.figure(figsize= (10,10))
+plt.plot(diff_nohgtqs * 1000, heights['Full heights'], color = 'red', label = 'HARMONIE noHGTQS')
+plt.plot(diff_nohgtqs_noshal * 1000, heights['Full heights'], color = 'blue', label = 'HARMONIE noHGTQS noSHAL')
+plt.plot(diff_nohgtqs_nouvmix * 1000, heights['Full heights'], color = 'green', label = 'HARMONIE noHGTQS noUVMix')
+plt.ylim([0,3000])
+plt.grid()
+plt.title('Difference plot [UTC hours 5, 6, 7 - UTC hours 17, 18, 19] for specific humidity')
+plt.ylabel('Height [m]')
+plt.xlabel('Difference $q_v$ [g/kg]')
+plt.legend()
+
+
+plt.figure(figsize= (10,10))
+plt.plot(diff_nohgtqs_nouvmix_567 * 1000, heights['Full heights'], color = 'purple', label = 'noHGTQS - noHGTQS noUVmix hours 5, 6, 7 [UTC]')
+plt.plot(diff_nohgtqs_nouvmix_171819 * 1000, heights['Full heights'], color = 'purple', linestyle = 'dashed', label = 'noHGTQS - noHGTQS noUVmix hours 17, 18, 19 [UTC]')
+
+plt.ylim([0,3000])
+plt.grid()
+plt.title('Difference plot HARMONIE noHGTQS - HARMONIE noHGTQS no UVmix for specific humidity')
+plt.ylabel('Height [m]')
+plt.xlabel('Difference $q_v$ [g/kg]')
+plt.axvline(x=0, color='black', linestyle  = 'dashed',linewidth=3.5)
+plt.legend()
 
 # %%
 '''Plot the mean of the hours'''
@@ -137,18 +210,20 @@ plt.xlabel('$q_v$ [g/kg]')
 plt.legend()
 plt.ylabel('Height [m]')
 
-plt.figure(figsize = (10,10))
-plt.plot(no_hgtqs_567_mean * 1000, heights['Full heights'], color = 'red', label = 'HARMONIE noHGTQS')
-plt.plot(no_hgtqs_noshal_567_mean * 1000, heights['Full heights'], color = 'blue', label = 'HARMONIE noHGTQS noSHAL')
-plt.plot(no_hgtqs_nouvmix_567_mean * 1000, heights['Full heights'], color = 'green', label = 'HARMONIE noHGTQS noUVmix')
-
-plt.ylim([0, 500])
-plt.xlim([12, 18])
-plt.grid()
-plt.title('Mean specific humidity for hours 5, 6 and 7 [UTC]')
-plt.xlabel('$q_v$ [g/kg]')
-plt.legend()
-plt.ylabel('Height [m]')
+# =============================================================================
+# plt.figure(figsize = (10,10))
+# plt.plot(no_hgtqs_567_mean * 1000, heights['Full heights'], color = 'red', label = 'HARMONIE noHGTQS')
+# plt.plot(no_hgtqs_noshal_567_mean * 1000, heights['Full heights'], color = 'blue', label = 'HARMONIE noHGTQS noSHAL')
+# plt.plot(no_hgtqs_nouvmix_567_mean * 1000, heights['Full heights'], color = 'green', label = 'HARMONIE noHGTQS noUVmix')
+# 
+# plt.ylim([0, 500])
+# plt.xlim([12, 18])
+# plt.grid()
+# plt.title('Mean specific humidity for hours 5, 6 and 7 [UTC]')
+# plt.xlabel('$q_v$ [g/kg]')
+# plt.legend()
+# plt.ylabel('Height [m]')
+# =============================================================================
 
 '''Plot the mean of the hours'''
 plt.figure(figsize = (10,10))
@@ -163,18 +238,20 @@ plt.xlabel('$q_v$ [g/kg]')
 plt.legend()
 plt.ylabel('Height [m]')
 
-plt.figure(figsize = (10,10))
-plt.plot(no_hgtqs_1719_mean * 1000, heights['Full heights'], color = 'red', label = 'HARMONIE noHGTQS')
-plt.plot(no_hgtqs_noshal_1719_mean * 1000, heights['Full heights'], color = 'blue', label = 'HARMONIE noHGTQS noSHAL')
-plt.plot(no_hgtqs_nouvmix_1719_mean * 1000, heights['Full heights'], color = 'green', label = 'HARMONIE noHGTQS noUVmix')
-
-plt.ylim([0, 500])
-plt.xlim([12, 18])
-plt.grid()
-plt.title('Mean specific humidity for hours 17, 18 and 19 [UTC]')
-plt.xlabel('$q_v$ [g/kg]')
-plt.legend()
-plt.ylabel('Height [m]')
+# =============================================================================
+# plt.figure(figsize = (10,10))
+# plt.plot(no_hgtqs_1719_mean * 1000, heights['Full heights'], color = 'red', label = 'HARMONIE noHGTQS')
+# plt.plot(no_hgtqs_noshal_1719_mean * 1000, heights['Full heights'], color = 'blue', label = 'HARMONIE noHGTQS noSHAL')
+# plt.plot(no_hgtqs_nouvmix_1719_mean * 1000, heights['Full heights'], color = 'green', label = 'HARMONIE noHGTQS noUVmix')
+# 
+# plt.ylim([0, 500])
+# plt.xlim([12, 18])
+# plt.grid()
+# plt.title('Mean specific humidity for hours 17, 18 and 19 [UTC]')
+# plt.xlabel('$q_v$ [g/kg]')
+# plt.legend()
+# plt.ylabel('Height [m]')
+# =============================================================================
 
 
 # %%
