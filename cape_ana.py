@@ -6,7 +6,6 @@ Created on Wed May  3 11:44:40 2023
 """
 
 
-import eurec4a
 from cut_subgrid_module import cut_sub_grid
 import numpy as np
 import pandas as pd
@@ -31,7 +30,52 @@ cape_noHGTQS_noSHAL = cut_sub_grid(cape_noHGTQS_noSHAL)
 cape_noHGTQS_noUVmix = cut_sub_grid(cape_noHGTQS_noUVmix)
 
 #%%
-'''Testing'''
+'''Get the mean of the area'''
+cape_noHGTQS_mean = cape_noHGTQS.mean(dim = ('x', 'y'))
+cape_noHGTQS_noSHAL_mean = cape_noHGTQS_noSHAL.mean(dim = ('x', 'y'))
+cape_noHGTQS_noUVmix_mean = cape_noHGTQS_noUVmix.mean(dim = ('x', 'y'))
+
+
+#%%
+'''Determine the diurnal cycle of cape'''
+cape_noHGTQS_diur = cape_noHGTQS_mean.groupby(cape_noHGTQS_mean.time.dt.hour).mean()
+cape_noHGTQS_noSHAL_diur = cape_noHGTQS_noSHAL_mean.groupby(cape_noHGTQS_noSHAL_mean.time.dt.hour).mean()
+cape_noHGTQS_noUVmix_diur = cape_noHGTQS_noUVmix_mean.groupby(cape_noHGTQS_noUVmix_mean.time.dt.hour).mean()
+
+
+#%%
+'''Transpose the data for plotting'''
+cape_noHGTQS_diur_trans  = cape_noHGTQS_diur.transpose()
+cape_noHGTQS_noSHAL_diur_trans = cape_noHGTQS_noSHAL_diur.transpose()
+cape_noHGTQS_noUVmix_diur_trans = cape_noHGTQS_noUVmix_diur.transpose()
+
+
+#%%
+'''Get contour plot of diurnalcycle'''
+hours = np.linspace(00,23, 24)
+lt = [20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+
+  
+fig, ax = plt.subplots(layout='constrained', figsize = (15,5))
+ax.plot(cape_noHGTQS_diur_trans.hour.values, cape_noHGTQS_diur_trans.cape.values, label = 'HARMONIE noHGQTS', color = 'red')
+ax.plot(cape_noHGTQS_diur_trans.hour.values, cape_noHGTQS_noSHAL_diur_trans.cape.values, label = 'HARMONIE noHGQTS noSHAL', color = 'blue')
+ax.plot(cape_noHGTQS_diur_trans.hour.values, cape_noHGTQS_noUVmix_diur_trans.cape.values, label = 'HARMONIE noHGQTS noUVmix', color = 'green')
+
+
+
+ax.grid()
+ax.set_xticks(hours)
+ax.set_xlabel('UTC Time [hr]')
+secax = ax.secondary_xaxis('top')
+secax.set_xticks(hours, lt)
+secax.set_xlabel('Local Time [hr]')
+plt.ylabel('CAPE [J/kg]')
+plt.title('Composite diurnal cycle of CAPE')
+plt.legend()
+plt.show()
+    
+#%%
+'''plot cape for video'''
 levels = np.linspace(0, 3000, 10)
 
 for i in range(len(cape_noHGTQS.time.values)):
@@ -67,12 +111,12 @@ for i in range(len(cape_noHGTQS_noUVmix.time.values)):
     plt.show()    
 
 # %%
-'''Plot the surface cape'''
+'''Plot the surface cape distribution'''
 plt.figure()
-sn.distplot(cape_noHGTQS.cape.values, label = 'noHGTQS', hist = False)
-sn.distplot(cape_noHGTQS_noSHAL.cape.values, label = 'noHGTQS noSHAL', hist = False)
-sn.distplot(cape_noHGTQS_noUVmix.cape.values, label = 'noHGTQS noUVmix', hist = False)
+sn.distplot(cape_noHGTQS.cape.values,  hist = False, color = 'red', label = 'HARMONIE noHGTQS')
+sn.distplot(cape_noHGTQS_noSHAL.cape.values,  hist = False, color = 'blue', label = 'HARMONIE noHGTQS noSHAL')
+sn.distplot(cape_noHGTQS_noUVmix.cape.values,  hist = False, color = 'green', label = 'HARMONIE noHGTQS noUVmix')
 plt.legend()
 plt.title("Density plot of CAPE")
-plt.xlabel('Count [-]')
+plt.xlabel('CAPE ')
 plt.grid()
