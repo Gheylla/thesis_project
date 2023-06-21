@@ -30,13 +30,13 @@ def numericalSort(value):
     parts[1::2] = map(int, parts[1::2])
     return parts
 
-for filename in sorted(glob.glob(r'C:\Users\LENOVO\Desktop\TU_Delft\thesis\result_plots\cape_noHGTQS_noUVmix_video\*.png') , key=numericalSort):
+for filename in sorted(glob.glob(r'C:\Users\LENOVO\Desktop\TU_Delft\thesis\result_plots\mass_flux_nouvmix\*.png') , key=numericalSort):
     img = cv2.imread(filename)
     height, width, layers = img.shape
     size = (width,height)
     img_array.append(img)
 
-out = cv2.VideoWriter('cape_noHGTQS_noUVmix_video.mp4', cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+out = cv2.VideoWriter('massfulx_noUVmix_video2.mp4', cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
 
 for i in range(len(img_array)):
     out.write(img_array[i])
