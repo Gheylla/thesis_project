@@ -44,6 +44,48 @@ va_noHGTQS = va_noHGTQS.mean(dim = ('x', 'y'))
 va_noHGTQS_noSHAL = va_noHGTQS_noSHAL.mean(dim = ('x', 'y'))
 va_noHGTQS_noUVmix = va_noHGTQS_noUVmix.mean(dim = ('x', 'y'))
 
+
+#%% 
+'''Get the mean vertical profile of the whole period'''
+
+ua_noHGTQS_mean_tot = ua_noHGTQS.mean(dim = ('time'))
+ua_noHGTQS_noSHAL_mean_tot = ua_noHGTQS_noSHAL.mean(dim = ('time'))
+ua_noHGTQS_noUVmix_mean_tot = ua_noHGTQS_noUVmix.mean(dim = ('time'))
+
+va_noHGTQS_mean_tot = va_noHGTQS.mean(dim = ('time'))
+va_noHGTQS_noSHAL_mean_tot = va_noHGTQS_noSHAL.mean(dim = ('time'))
+va_noHGTQS_noUVmix_mean_tot = va_noHGTQS_noUVmix.mean(dim = ('time'))
+
+#%%
+'''Plot the mean vertical profile of the winds'''
+plt.figure(figsize = (10,10))
+plt.plot(np.flip(ua_noHGTQS_mean_tot.ua.values), heights['Full heights'], color = 'red', label = 'HARMONIE noHGTQS')
+plt.plot(np.flip(ua_noHGTQS_noSHAL_mean_tot.ua.values), heights['Full heights'], color = 'blue', label = 'HARMONIE noHGTQS noSHAL' )
+plt.plot(np.flip(ua_noHGTQS_noUVmix_mean_tot.ua.values), heights['Full heights'], color = 'green' , label = 'HARMONIE noHGTQS noUVmix')
+plt.ylim([0,3000])
+plt.xlim([-11, -2.5])
+plt.legend()
+plt.grid()
+plt.title('Mean vertical profile of east-ward winds')
+plt.xlabel('U windspeed [m/s]')
+plt.ylabel('Height [m]')
+
+#%%
+
+'''Plot the mean vertical profile of the winds'''
+plt.figure(figsize = (10,10))
+plt.plot(np.flip(va_noHGTQS_mean_tot.va.values), heights['Full heights'], color = 'red', label = 'HARMONIE noHGTQS')
+plt.plot(np.flip(va_noHGTQS_noSHAL_mean_tot.va.values), heights['Full heights'], color = 'blue', label = 'HARMONIE noHGTQS noSHAL' )
+plt.plot(np.flip(va_noHGTQS_noUVmix_mean_tot.va.values), heights['Full heights'], color = 'green' , label = 'HARMONIE noHGTQS noUVmix')
+plt.ylim([0,3000])
+plt.xlim([-11, -2.5])
+plt.legend()
+plt.grid()
+plt.title('Mean vertical profile of north-ward winds')
+plt.xlabel('V windspeed [m/s]')
+plt.ylabel('Height [m]')
+
+
 # %%
 '''Determine the diurnal cycle of the winds'''
 ua_noHGTQS_diur = ua_noHGTQS.groupby(ua_noHGTQS.time.dt.hour).mean()
@@ -223,19 +265,22 @@ plt.ylabel('Height [m]')
 plt.xlabel('Windspeed [m/s]')
 plt.grid()
 plt.ylim([0,3000])
+plt.xlim([-11, -2.5])
 plt.legend()
 
-plt.figure(figsize = (10,10))
-plt.plot(np.flip(va_noHGTQS_567mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS', color = 'red')
-plt.plot(np.flip(va_noHGTQS_noSHAL_567mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS noSHAL', color = 'blue')
-plt.plot(np.flip(va_noHGTQS_noUVmix_567mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS noUVmix', color = 'green')
-
-plt.title('Mean Northward vertical wind profiles for hours 5, 6 and 7 [UTC]')
-plt.ylabel('Height [m]')
-plt.xlabel('Windspeed [m/s]')
-plt.grid()
-plt.ylim([0,3000])
-plt.legend()
+# =============================================================================
+# plt.figure(figsize = (10,10))
+# plt.plot(np.flip(va_noHGTQS_567mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS', color = 'red')
+# plt.plot(np.flip(va_noHGTQS_noSHAL_567mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS noSHAL', color = 'blue')
+# plt.plot(np.flip(va_noHGTQS_noUVmix_567mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS noUVmix', color = 'green')
+# 
+# plt.title('Mean Northward vertical wind profiles for hours 5, 6 and 7 [UTC]')
+# plt.ylabel('Height [m]')
+# plt.xlabel('Windspeed [m/s]')
+# plt.grid()
+# plt.ylim([0,3000])
+# plt.legend()
+# =============================================================================
 
 
 plt.figure(figsize = (10,10))
@@ -248,20 +293,23 @@ plt.ylabel('Height [m]')
 plt.xlabel('Windspeed [m/s]')
 plt.grid()
 plt.ylim([0,3000])
+plt.xlim([-11, -2.5])
 plt.legend()
 
-plt.figure(figsize = (10,10))
-plt.plot(np.flip(va_noHGTQS_1719mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS', color = 'red')
-plt.plot(np.flip(va_noHGTQS_noSHAL_1719mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS noSHAL', color = 'blue')
-plt.plot(np.flip(va_noHGTQS_noUVmix_1719mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS noUVmix', color = 'green')
-
-plt.title('Mean Northward vertical wind profiles for hours 17, 18 and 19 [UTC]')
-plt.ylabel('Height [m]')
-plt.xlabel('Windspeed [m/s]')
-plt.grid()
-plt.ylim([0,3000])
-plt.legend()
-
+# =============================================================================
+# plt.figure(figsize = (10,10))
+# plt.plot(np.flip(va_noHGTQS_1719mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS', color = 'red')
+# plt.plot(np.flip(va_noHGTQS_noSHAL_1719mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS noSHAL', color = 'blue')
+# plt.plot(np.flip(va_noHGTQS_noUVmix_1719mean.va.values), heights['Full heights'], label = 'HARMONIE noHGTQS noUVmix', color = 'green')
+# 
+# plt.title('Mean Northward vertical wind profiles for hours 17, 18 and 19 [UTC]')
+# plt.ylabel('Height [m]')
+# plt.xlabel('Windspeed [m/s]')
+# plt.grid()
+# plt.ylim([0,3000])
+# plt.legend()
+# 
+# =============================================================================
 
 
 
