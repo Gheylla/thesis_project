@@ -60,7 +60,7 @@ diur_noHGTQS_noUVmix = mean_tot_speed_noHGTQS_noUVmix.groupby(mean_tot_speed_noH
 hours = np.linspace(00,23, 24)
 lt = [20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 
-fig, ax = plt.subplots(layout='constrained', figsize = (15,10))
+fig, ax = plt.subplots(layout='constrained', figsize = (15,5))
 
 
 ax.plot(diur_noHGTQS.hour.values, diur_noHGTQS.values, label = 'HARMONIE noHGTQS', color = 'red')
@@ -107,7 +107,7 @@ mean_vas_noHGTQS_noUVmix = mean_vas_noHGTQS_noUVmix.groupby(vas_noHGTQS.time.dt.
 hours = np.linspace(00,23, 24)
 lt = [20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 
-fig, ax = plt.subplots(layout='constrained', figsize = (15,10))
+fig, ax = plt.subplots(layout='constrained', figsize = (10,7))
 ax.plot(mean_uas_noHGTQS.hour.values, mean_uas_noHGTQS.uas.values, label = 'HARMONIE noHGTQS', color = 'red')
 ax.plot(mean_uas_noHGTQS_noSHAL.hour.values, mean_uas_noHGTQS_noSHAL.uas.values, label = 'HARMONIE noHGTQS noSHAL', color = 'blue')
 ax.plot(mean_uas_noHGTQS_noUVmix.hour.values, mean_uas_noHGTQS_noUVmix.uas.values, label = 'HARMONIE noHGTQS noUVmix', color = 'green')
@@ -126,7 +126,7 @@ plt.show()
 
 
 #%%
-fig1, ax2 = plt.subplots(layout='constrained', figsize = (15,10))
+fig1, ax2 = plt.subplots(layout='constrained', figsize = (10,7))
 ax2.plot(mean_vas_noHGTQS.hour.values, mean_vas_noHGTQS.vas.values, label = 'HARMONIE noHGTQS', color = 'red')
 ax2.plot(mean_vas_noHGTQS_noSHAL.hour.values, mean_vas_noHGTQS_noSHAL.vas.values, label = 'HARMONIE noHGTQS noSHAL', color = 'blue')
 ax2.plot(mean_vas_noHGTQS_noUVmix.hour.values, mean_vas_noHGTQS_noUVmix.vas.values, label = 'HARMONIE noHGTQS UVmix', color = 'green')
